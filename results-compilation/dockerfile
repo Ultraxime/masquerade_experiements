@@ -1,0 +1,13 @@
+FROM python:3-alpine
+
+RUN apk update && apk add --update g++ jpeg-dev zlib-dev libjpeg make bash
+
+COPY requirements.txt .
+
+RUN pip install -Ur requirements.txt
+
+COPY entrypoint.sh /
+
+COPY *.py /
+
+ENTRYPOINT /entrypoint.sh

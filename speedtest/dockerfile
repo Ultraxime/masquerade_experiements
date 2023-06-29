@@ -1,0 +1,17 @@
+FROM python:3-alpine
+
+RUN apk add git tcpdump bash firefox rsync
+
+RUN git clone https://github.com/ultraxime/pyspeedtest /pyspeedtest
+
+# COPY ./pyspeedtest /pyspeedtest
+
+COPY requirements.txt .
+
+RUN pip install -Ur requirements.txt
+
+COPY speedtest.py /pyspeedtest/
+
+COPY entrypoint.sh /
+
+ENTRYPOINT /entrypoint.sh

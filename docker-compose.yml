@@ -1,0 +1,177 @@
+version: "3.9"
+
+x-environement: &default-environement
+  PROXY: proxy-client:8989
+  ITERATIONS: 40
+  MESURE: false
+
+services:
+  proxy-server:
+    image: registry.ultraxime.fr/proxy-server
+    build:
+      context: proxy
+      dockerfile: dockerfile
+      args:
+        type: server
+    environment:
+      ip: proxy-server
+    restart: always
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.proxy-server==True"
+    networks:
+      - proxy
+
+
+  proxy-client:
+    image: registry.ultraxime.fr/proxy-client
+    build:
+      context: proxy
+      dockerfile: dockerfile
+      args:
+        type: client
+    environment:
+      ip: proxy-client
+      remote_ip: proxy-server
+      client_type: http
+    # ports:
+    #   - target: 8989
+    #     published: 8989
+    #     protocol: tcp
+    #     mode: ingress
+    #   - target: 8989
+    #     published: 8989
+    #     protocol: udp
+    #     mode: ingress
+    restart: always
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.proxy-client==True"
+    networks:
+      - proxy
+      - client
+    depends_on:
+      - proxy-server
+
+  browsertime:
+    image: registry.ultraxime.fr/browsertime-custom
+    build:
+      context: browsertime
+      dockerfile: dockerfile
+    environment:
+      <<: *default-environement
+    volumes:
+      - type: bind
+        source: results
+        target: /browsertime/browsertime-results
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.client==True"
+    networks:
+      - client
+    depends_on:
+      - proxy-client
+    cap_add:
+      - NET_ADMIN
+
+  speedtest:
+    image: registry.ultraxime.fr/speedtest
+    build:
+      context: speedtest
+      dockerfile: dockerfile
+    environment:
+      <<: *default-environement
+    volumes:
+      - type: bind
+        source: results
+        target: /results
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.client==True"
+    networks:
+      - client
+    depends_on:
+      browsertime:
+        condition: service_completed_successfully
+
+  bulk_download:
+    image: registry.ultraxime.fr/bulk_download
+    build:
+      context: bulk_download
+      dockerfile: dockerfile
+    environment:
+      <<: *default-environement 
+    volumes:
+      - type: bind
+        source: results
+        target: /results
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.client==True"
+    networks:
+      - client
+    depends_on:
+      speedtest:
+        condition: service_completed_successfully
+
+  results-compilation:
+    image: registry.ultraxime.fr/results-compilation
+    build:
+      context: results-compilation
+      dockerfile: dockerfile
+    volumes:
+      - type: bind
+        source: results
+        target: /results
+    depends_on:
+      browsertime:
+        condition: service_completed_successfully
+        restart: true
+      speedtest:
+        condition: service_completed_successfully
+        restart: true
+      bulk_download:
+        condition: service_completed_successfully
+        restart: true
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.client==True"
+    networks: []
+
+networks:
+  proxy:
+    name: proxy
+    external: false
+    attachable: true
+  client:
+    name: client
+    external: false
+    attachable: true 
