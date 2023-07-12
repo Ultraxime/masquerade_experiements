@@ -1,6 +1,8 @@
-FROM python:3-alpine as building_stage
+FROM python:3.8-alpine AS building_stage
 
-RUN apk update && apk add --update g++ jpeg-dev zlib-dev libjpeg make
+RUN apk add git g++ build-base lapack-dev gfortran
+
+RUN git clone https://github.com/marty90/errant.git
 
 RUN python -m venv /opt/venv
 # Make sure we use the virtualenv:
@@ -11,15 +13,15 @@ COPY requirements.txt .
 RUN pip install -Ur requirements.txt
 
 
-FROM python:3-alpine
+FROM python:3.8-alpine
 
-RUN apk add --update bash libstdc++
+RUN apk add bash iproute2
 
 COPY --from=building_stage /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY entrypoint.sh /
+COPY --from=building_stage errant .
 
-COPY *.py /
+COPY entrypoint.sh /
 
 ENTRYPOINT /entrypoint.sh

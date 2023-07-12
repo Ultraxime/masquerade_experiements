@@ -1,0 +1,16 @@
+FROM maximebruno/browsertime
+
+RUN sudo apt-get install -y rsync netcat-traditional
+
+COPY --from=registry.ultraxime.fr/dns /dns-client.sh /
+
+COPY entrypoint.sh /entrypoint.sh
+
+COPY similarweb-2021.csv .
+
+RUN wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/de.txt && \
+	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/fr.txt && \
+	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/it.txt && \
+	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/us.txt
+
+ENTRYPOINT /entrypoint.sh

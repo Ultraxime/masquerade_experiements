@@ -33,19 +33,24 @@ class BrowserTime(Result):
     _no_proxy: List[Tuple[str, Report]]
 
     def __init__(self, folder: str = "."):
-        self._no_proxy = []
-        self._proxy = []
+        self._native = []
+        self._masquerade = []
+        self._squid = []
 
         for website in os.scandir(folder):
             if website.name not in ("archives", "results") and website.is_dir():
                 attempts = [attempt for attempt in os.scandir(website.path)]
-                assert len(attempts) == 2
+                assert len(attempts) == 3
                 attempts.sort(key=lambda f: f.path)
-                self._no_proxy.append((website.name, Report(attempts[0].path)))
-                self._proxy.append((website.name, Report(attempts[1].path)))
+                self._native.append((website.name, Report(attempts[0].path)))
+                self._masquerade.append((website.name, Report(attempts[1].path)))
+                self._squid.append((website.name, Report(attempts[2].path)))
 
     def plot(self):
         self.subplot("Page Load Time", "ms", lambda x : [int(test) for test in x[1].pageLoadTime])
+        for website, test in self._masquerade:
+            if test != []:
+                self.subplot("Page Load Time %s" % website, "ms", lambda x : [int(test) for test in x[1].pageLoadTime] if x[0] == website else [])
 
     def save(self):
         with open('/results/results/browsertime %s.yml' % time.asctime(), "w", encoding="utf-8") as file:

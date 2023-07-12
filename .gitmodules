@@ -1,0 +1,3 @@
+[submodule "browsertime"]
+	path = browsertime
+	url = git@github.com:Ultraxime/browsertime.git

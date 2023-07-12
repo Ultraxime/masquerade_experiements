@@ -1,8 +1,9 @@
 version: "3.9"
 
 x-environement: &default-environement
-  PROXY: proxy-client:8989
-  ITERATIONS: 40
+  PROXY_MASQUERADE: proxy-client:8989
+  PROXY_SQUID: squid-proxy:3128
+  ITERATIONS: 1
   MESURE: false
 
 services:
@@ -25,7 +26,8 @@ services:
           - "node.labels.proxy-server==True"
     networks:
       - proxy
-
+    profiles:
+     - run
 
   proxy-client:
     image: registry.ultraxime.fr/proxy-client
@@ -38,15 +40,6 @@ services:
       ip: proxy-client
       remote_ip: proxy-server
       client_type: http
-    # ports:
-    #   - target: 8989
-    #     published: 8989
-    #     protocol: tcp
-    #     mode: ingress
-    #   - target: 8989
-    #     published: 8989
-    #     protocol: udp
-    #     mode: ingress
     restart: always
     deploy:
       mode: global
@@ -57,15 +50,68 @@ services:
           - "node.labels.proxy-client==True"
     networks:
       - proxy
-      - client
+      - gateway
     depends_on:
       - proxy-server
+    profiles:
+      - run
 
-  browsertime:
+  squid-proxy:
+    image: ubuntu/squid:latest
+    restart: always
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+    networks:
+      - gateway
+    profiles:
+      - run
+
+  dns:
+    image: registry.ultraxime.fr/dns
+    build: dns
+    restart: always
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+    networks:
+      - gateway
+      - client
+    profiles:
+      - build
+      - run
+
+  gateway:
+    image: registry.ultraxime.fr/gateway
+    build: gateway
+    restart: always
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.proxy-client==True"
+    networks:
+      gateway:
+        priority: 1
+      client:
+        priority: 0
+    depends_on:
+      - squid-proxy
+      - proxy-client
+      - dns
+    cap_add:
+      - NET_ADMIN
+    profiles:
+      - run
+
+
+  browsertime-custom:
     image: registry.ultraxime.fr/browsertime-custom
-    build:
-      context: browsertime
-      dockerfile: dockerfile
+    build: browsertime-custom
     environment:
       <<: *default-environement
     volumes:
@@ -83,15 +129,15 @@ services:
     networks:
       - client
     depends_on:
-      - proxy-client
+      - gateway
     cap_add:
       - NET_ADMIN
+    profiles:
+      - run
 
   speedtest:
     image: registry.ultraxime.fr/speedtest
-    build:
-      context: speedtest
-      dockerfile: dockerfile
+    build: speedtest
     environment:
       <<: *default-environement
     volumes:
@@ -108,15 +154,17 @@ services:
           - "node.labels.client==True"
     networks:
       - client
+    cap_add:
+      - NET_ADMIN
     depends_on:
-      browsertime:
+      browsertime-custom:
         condition: service_completed_successfully
+    profiles:
+      - run
 
   bulk_download:
     image: registry.ultraxime.fr/bulk_download
-    build:
-      context: bulk_download
-      dockerfile: dockerfile
+    build: bulk_download
     environment:
       <<: *default-environement 
     volumes:
@@ -133,21 +181,23 @@ services:
           - "node.labels.client==True"
     networks:
       - client
+    cap_add:
+      - NET_ADMIN
     depends_on:
       speedtest:
         condition: service_completed_successfully
+    profiles:
+      - run
 
   results-compilation:
     image: registry.ultraxime.fr/results-compilation
-    build:
-      context: results-compilation
-      dockerfile: dockerfile
+    build: results-compilation
     volumes:
       - type: bind
         source: results
         target: /results
     depends_on:
-      browsertime:
+      browsertime-custom:
         condition: service_completed_successfully
         restart: true
       speedtest:
@@ -165,6 +215,8 @@ services:
         constraints:
           - "node.labels.client==True"
     networks: []
+    profiles:
+      - run
 
 networks:
   proxy:
@@ -175,3 +227,7 @@ networks:
     name: client
     external: false
     attachable: true 
+  gateway:
+    name: gateway
+    external: false
+    attachable: true

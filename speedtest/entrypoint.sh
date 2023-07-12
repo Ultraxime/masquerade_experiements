@@ -2,7 +2,26 @@
 
 MESURE=${MESURE:-true}
 
+
+function network_setup {
+
+	GATEWAY=${GATEWAY:-gateway}
+
+	# ip route
+
+	GATEWAY_IP=$(getent hosts $GATEWAY | cut -d" " -f1 | head -n 1)
+	# echo $GATEWAY_IP
+	ip route delete default
+	ip route add default via $GATEWAY_IP dev eth0
+
+	# ip route
+}
+
+
 if $MESURE; then
+	
+	network_setup
+
 	BROWSER=${BROWSER:-firefox}
 
 	ITERATIONS=${ITERATIONS:-3}
@@ -16,7 +35,14 @@ if $MESURE; then
 		rsync --archive --remove-source-files --progress /results/speedtest*.yml /results/archives
 	fi
 
-	/pyspeedtest/speedtest.py -n $ITERATIONS -x $PROXY -b $BROWSER
+	export FILE="/results/speedtest $(date).yml"
+	touch "$FILE"
 
-	chown -R $ID /results/speedtest*.yml
+	/speedtest.py -n $ITERATIONS -b $BROWSER --name native
+	/dns-client.sh $PROXY_MASQUERADE | (read PROXY && \
+	/speedtest.py -n $ITERATIONS -x $PROXY -b $BROWSER --name proxy-masquerade)
+	/dns-client.sh $PROXY_SQUID | (read PROXY && \
+	/speedtest.py -n $ITERATIONS -x $PROXY -b $BROWSER --name proxy-squid)
+
+	chown -R $ID $FILE
 fi

@@ -1,9 +1,0 @@
-FROM registry.ultraxime.fr/browsertime
-
-RUN sudo apt-get install -y rsync
-
-COPY entrypoint.sh /entrypoint.sh
-
-COPY websites.txt /
-
-ENTRYPOINT /entrypoint.sh
