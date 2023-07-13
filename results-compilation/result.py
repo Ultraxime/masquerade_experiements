@@ -59,12 +59,6 @@ class Result:
                 mini = native[0]
                 maxi = native[-1]
         
-        print(type(mini))
-        print(mini)
-        print(type(maxi))
-        print(maxi)
-
-
         plt.axis([mini, maxi, 0, 1])
         plt.ylabel('ECDF')
         plt.xlabel('%s' % name + ((" (%s)" % unit) if unit else ""))

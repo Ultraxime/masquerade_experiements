@@ -4,7 +4,7 @@ x-environement: &default-environement
   PROXY_MASQUERADE: proxy-client:8989
   PROXY_SQUID: squid-proxy:3128
   ITERATIONS: 1
-  MESURE: false
+  MESURE: true
 
 services:
   proxy-server:
@@ -95,10 +95,9 @@ services:
         constraints:
           - "node.labels.proxy-client==True"
     networks:
-      gateway:
-        priority: 1
-      client:
-        priority: 0
+      - internet
+      - client
+      - gateway
     depends_on:
       - squid-proxy
       - proxy-client
@@ -224,10 +223,14 @@ networks:
     external: false
     attachable: true
   client:
-    name: client
+    name: 2_client
     external: false
     attachable: true 
   gateway:
-    name: gateway
+    name: 3_gateway
+    external: false
+    attachable: true
+  internet:
+    name: 1_internet
     external: false
     attachable: true

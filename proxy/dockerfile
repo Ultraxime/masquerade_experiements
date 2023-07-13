@@ -30,9 +30,15 @@ RUN cargo build --bins --release
 
 FROM base AS client
 
+RUN apk add curl
+
 ENV port=8989
 ENV ip=127.0.0.1
 EXPOSE ${port}
+
+ENV healtcheck=https://www.google.fr
+
+HEALTHCHECK --timeout=3s --start-period=5s CMD curl -p -x ${ip}:${port} ${healtcheck}
 
 ENV remote_ip=127.0.0.1
 ENV remote_port=4433

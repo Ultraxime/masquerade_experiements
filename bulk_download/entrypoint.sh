@@ -44,7 +44,7 @@ if $MESURE; then
 	do
 		echo "Test n°$i (native)"
 		echo -n "  - " >> "$FILE"
-		curl -s -w %{speed_download} -o /dev/null http://speed.hetzner.de/100MB.bin >> "$FILE"
+		curl -s -w %{speed_download} -o /dev/null http://speed.hetzner.de/1GB.bin >> "$FILE"
 		echo "" >> "$FILE"
 	done
 	
@@ -55,7 +55,7 @@ if $MESURE; then
 		echo "Test n°$i (proxy-masquerade)"
 		echo -n "  - " >> "$FILE"
 		/dns-client.sh $PROXY_MASQUERADE | (read PROXY && \
-		curl -s -w %{speed_download} -o /dev/null -p -x $PROXY http://speed.hetzner.de/100MB.bin >> "$FILE")
+		curl -s -w %{speed_download} -o /dev/null -p -x $PROXY http://speed.hetzner.de/1GB.bin >> "$FILE")
 		echo "" >> "$FILE"
 	done
 	
@@ -66,7 +66,7 @@ if $MESURE; then
 		echo "Test n°$i (proxy-squid)"
 		echo -n "  - " >> "$FILE"
 		/dns-client.sh $PROXY_SQUID | (read PROXY && \
-		curl -s -w %{speed_download} -o /dev/null -p -x $PROXY http://speed.hetzner.de/100MB.bin >> "$FILE")
+		curl -s -w %{speed_download} -o /dev/null -p -x $PROXY http://speed.hetzner.de/1GB.bin >> "$FILE")
 		echo "" >> "$FILE"
 	done
 	
