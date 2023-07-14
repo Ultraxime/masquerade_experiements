@@ -39,10 +39,11 @@ if $MESURE; then
 	touch "$FILE"
 
 	/speedtest.py -n $ITERATIONS -b $BROWSER --name native
-	/dns-client.sh $PROXY_MASQUERADE | (read PROXY && \
-	/speedtest.py -n $ITERATIONS -x $PROXY -b $BROWSER --name proxy-masquerade)
+	
+	/speedtest.py -n $ITERATIONS -x $PROXY_MASQUERADE -b $BROWSER --name proxy-masquerade
+	
 	/dns-client.sh $PROXY_SQUID | (read PROXY && \
 	/speedtest.py -n $ITERATIONS -x $PROXY -b $BROWSER --name proxy-squid)
 
-	chown -R $ID $FILE
+	chown -R $ID "$FILE"
 fi

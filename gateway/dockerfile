@@ -21,6 +21,7 @@ COPY --from=building_stage /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY --from=building_stage errant/errant errant/models.pickle errant/sample_from_distribution.py /
+# COPY errant/errant errant/models.pickle errant/sample_from_distribution.py /
 
 COPY entrypoint.sh /
 

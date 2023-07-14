@@ -1,10 +1,21 @@
 .PHONY: run build build_base
 
-run: build docker-compose.yml
-	docker compose --profile run up
+full:
+	./run.sh
 
-build: build_base docker-compose.yml
-	docker compose --profile run build
+full_compile: build
+	docker compose -f docker-compose-compilation.yml run --remove-orphans full-compilation
 
-build_base: docker-compose.yml
-	docker compose --profile build build
+run: measure compile
+
+compile: build
+	docker compose -f docker-compose-compilation.yml run --remove-orphans results-compilation
+
+measure: build
+	docker compose -f docker-compose-measure.yml run --remove-orphans bulk_download
+
+build: build_base
+	docker compose -f docker-compose-build.yml build
+
+build_base:
+	docker compose -f docker-compose-build.yml build dns

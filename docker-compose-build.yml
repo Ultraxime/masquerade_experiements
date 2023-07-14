@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  proxy-server:
+    image: registry.ultraxime.fr/proxy-server
+    build:
+      context: proxy
+      dockerfile: dockerfile
+      args:
+        type: server
+    environment:
+      SERVER: proxy-server:4433
+
+  proxy-client:
+    image: registry.ultraxime.fr/proxy-client
+    build:
+      context: proxy
+      dockerfile: dockerfile
+      args:
+        type: client
+    environment:
+      CLIENT: proxy-client:8989
+      SERVER: proxy-server:4433
+
+  dns:
+    image: registry.ultraxime.fr/dns
+    build: dns
+
+  gateway:
+    image: registry.ultraxime.fr/gateway
+    build: gateway
+
+  browsertime-custom:
+    image: registry.ultraxime.fr/browsertime-custom
+    build: browsertime-custom
+
+  speedtest:
+    image: registry.ultraxime.fr/speedtest
+    build: speedtest
+
+  bulk_download:
+    image: registry.ultraxime.fr/bulk_download
+    build: bulk_download
+
+  results-compilation:
+    image: registry.ultraxime.fr/results-compilation
+    build: 
+      context: results-compilation
+      dockerfile: dockerfile
+      args:
+        type: partial
+
+  full-compilation:
+    image: registry.ultraxime.fr/full-compilation
+    build: 
+      context: results-compilation
+      dockerfile: dockerfile
+      args:
+        type: full

@@ -1,3 +1,5 @@
+ARG type
+
 FROM python:3-alpine as building_stage
 
 RUN apk update && apk add --update g++ jpeg-dev zlib-dev libjpeg make
@@ -11,15 +13,26 @@ COPY requirements.txt .
 RUN pip install -Ur requirements.txt
 
 
-FROM python:3-alpine
+FROM python:3-alpine as base
 
 RUN apk add --update bash libstdc++
 
 COPY --from=building_stage /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY entrypoint.sh /
-
 COPY *.py /
+
+
+FROM base as partial
+
+COPY entrypoint_partial.sh /entrypoint.sh
+
+
+FROM base as full
+
+COPY entrypoint_full.sh /entrypoint.sh
+
+
+FROM ${type}
 
 ENTRYPOINT /entrypoint.sh

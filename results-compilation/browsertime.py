@@ -11,9 +11,11 @@ from typing import List, Tuple, Dict
 
 class Report:
     pageLoadTime: List[int]
+    speedIndex: List[int]
 
     def __init__(self, filename: str):
         self.pageLoadTime = []
+        self.speedIndex = []
         
         try:
             with open(filename+"/browsertime.json", "r", encoding="utf-8") as file:
@@ -21,6 +23,8 @@ class Report:
             
             for attempt in content[0]["browserScripts"]:
                 self.pageLoadTime.append(attempt["timings"]["pageTimings"]["pageLoadTime"])
+            for attempt in content[0]["visualMetrics"]:
+                self.speedIndex.append(attempt["SpeedIndex"])
         except FileNotFoundError:
             pass
 
@@ -48,9 +52,11 @@ class BrowserTime(Result):
 
     def plot(self):
         self.subplot("Page Load Time", "ms", lambda x : [int(test) for test in x[1].pageLoadTime])
+        self.subplot("Speed Index", "ms", lambda x : [int(test) for test in x[1].speedIndex])
         for website, test in self._masquerade:
             if test != []:
                 self.subplot("Page Load Time %s" % website, "ms", lambda x : [int(test) for test in x[1].pageLoadTime] if x[0] == website else [])
+                self.subplot("Speed Index %s" % website, "ms", lambda x : [int(test) for test in x[1].speedIndex] if x[0] == website else [])
 
     def save(self):
         with open('/results/results/browsertime %s.yml' % time.asctime(), "w", encoding="utf-8") as file:

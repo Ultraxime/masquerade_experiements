@@ -31,7 +31,8 @@ for file in os.scandir("/results"):
             for i in range(args.iterations):
                 print("Test n°" + str(i) + " (" + args.name + ")")
                 if args.proxy:
-                    content[args.name].append(run_speedtest(browser=args.browser, pcap_path="trace.pcap", options=["--headless", '--proxy-server=%s' % args.proxy]))
+                    print(args.proxy)
+                    content[args.name].append(run_speedtest(browser=args.browser, pcap_path="trace.pcap", options=["--headless", "--proxy-server=\"%s\"" % args.proxy]))
                 else:
                     content[args.name].append(run_speedtest(browser=args.browser, pcap_path="trace.pcap", options=["--headless"]))
 

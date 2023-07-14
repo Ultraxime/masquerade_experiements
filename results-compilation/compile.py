@@ -1,12 +1,6 @@
-from browsertime import BrowserTime
-from speedtest import SpeedTest
-from bulktest import BulkTest
+from full_results import FullResults
 
+result = FullResults("/results")
 
-browsertime = BrowserTime("/results")
-browsertime.save()
-browsertime.plot()
-
-SpeedTest("/results").plot()
-BulkTest("/results").plot()
-
+result.plot()
+# result.save()

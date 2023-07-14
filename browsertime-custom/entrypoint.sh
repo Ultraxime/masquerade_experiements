@@ -35,10 +35,10 @@ if $MESURE; then
 	ID=$(stat -c "%u:%g" /browsertime/browsertime-results)
 
 	if [ -d /browsertime/browsertime-results ]; then
-		mkdir -p /browsertime/browsertime-results/archives
-		chown $ID /browsertime/browsertime-results/archives
+		mkdir -p /browsertime/archives
+		chown $ID /browsertime/archives
 
-		rsync --archive --exclude "archives" --exclude "results" --exclude "*.yml" --remove-source-files --progress /browsertime/browsertime-results/* /browsertime/browsertime-results/archives
+		rsync --archive --exclude "archives" --exclude "results" --exclude "*.yml" --remove-source-files --progress /browsertime/browsertime-results/* /browsertime/archives
 
 		# remove empty dir
 		rsync --exclude "archives" --exclude "results" --exclude "*.yml" --delete --recursive --dirs --progress `mktemp -d`/ /browsertime/browsertime-results/
@@ -53,8 +53,9 @@ if $MESURE; then
 	for website in $(cat /websites.txt)
 	do
 	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO https://www.$website
-	    /dns-client.sh $PROXY_MASQUERADE | (read PROXY && echo $PROXY && \
-		/start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --proxy.https $PROXY https://www.$website)
+	    
+	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --proxy.https $PROXY_MASQUERADE https://www.$website
+	    
 		/dns-client.sh $PROXY_SQUID | (read PROXY && echo $PROXY && \
 		/start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --proxy.https $PROXY https://www.$website)
 	done

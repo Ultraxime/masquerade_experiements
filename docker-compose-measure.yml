@@ -1,22 +1,10 @@
 version: "3.9"
 
-x-environement: &default-environement
-  PROXY_MASQUERADE: proxy-client:8989
-  PROXY_SQUID: squid-proxy:3128
-  ITERATIONS: 1
-  MESURE: true
-
 services:
   proxy-server:
     image: registry.ultraxime.fr/proxy-server
-    build:
-      context: proxy
-      dockerfile: dockerfile
-      args:
-        type: server
-    environment:
-      ip: proxy-server
-    restart: always
+    env_file: masquerade.env
+    restart: on-failure
     deploy:
       mode: global
       restart_policy:
@@ -25,22 +13,12 @@ services:
         constraints:
           - "node.labels.proxy-server==True"
     networks:
-      - proxy
-    profiles:
-     - run
-
+      - gateway
+    
   proxy-client:
     image: registry.ultraxime.fr/proxy-client
-    build:
-      context: proxy
-      dockerfile: dockerfile
-      args:
-        type: client
-    environment:
-      ip: proxy-client
-      remote_ip: proxy-server
-      client_type: http
-    restart: always
+    env_file: masquerade.env
+    restart: on-failure
     deploy:
       mode: global
       restart_policy:
@@ -49,29 +27,27 @@ services:
         constraints:
           - "node.labels.proxy-client==True"
     networks:
-      - proxy
-      - gateway
+      - client
     depends_on:
       - proxy-server
-    profiles:
-      - run
-
+      - gateway
+      - dns
+    cap_add:
+      - NET_ADMIN
+    
   squid-proxy:
     image: ubuntu/squid:latest
-    restart: always
+    restart: on-failure
     deploy:
       mode: global
       restart_policy:
         condition: on-failure
     networks:
       - gateway
-    profiles:
-      - run
-
+    
   dns:
     image: registry.ultraxime.fr/dns
-    build: dns
-    restart: always
+    restart: on-failure
     deploy:
       mode: global
       restart_policy:
@@ -79,14 +55,11 @@ services:
     networks:
       - gateway
       - client
-    profiles:
-      - build
-      - run
 
   gateway:
     image: registry.ultraxime.fr/gateway
-    build: gateway
-    restart: always
+    env_file: network.env
+    restart: on-failure
     deploy:
       mode: global
       restart_policy:
@@ -95,28 +68,25 @@ services:
         constraints:
           - "node.labels.proxy-client==True"
     networks:
-      - internet
       - client
       - gateway
     depends_on:
       - squid-proxy
-      - proxy-client
+      - proxy-server
       - dns
     cap_add:
       - NET_ADMIN
-    profiles:
-      - run
-
 
   browsertime-custom:
     image: registry.ultraxime.fr/browsertime-custom
-    build: browsertime-custom
-    environment:
-      <<: *default-environement
+    env_file:
+      - browsertime.env
+      - proxys.env
     volumes:
       - type: bind
         source: results
-        target: /browsertime/browsertime-results
+        target: /browsertime
+    restart: on-failure
     deploy:
       mode: replicated
       replicas: 1
@@ -128,21 +98,23 @@ services:
     networks:
       - client
     depends_on:
-      - gateway
+      proxy-client:
+        condition: service_healthy
+      gateway:
+        condition: service_started
     cap_add:
       - NET_ADMIN
-    profiles:
-      - run
 
   speedtest:
     image: registry.ultraxime.fr/speedtest
-    build: speedtest
-    environment:
-      <<: *default-environement
+    env_file:
+      - basic_test.env
+      - proxys.env
     volumes:
       - type: bind
         source: results
         target: /results
+    restart: on-failure
     deploy:
       mode: replicated
       replicas: 1
@@ -158,14 +130,15 @@ services:
     depends_on:
       browsertime-custom:
         condition: service_completed_successfully
-    profiles:
-      - run
+      proxy-client:
+        condition: service_healthy
 
   bulk_download:
     image: registry.ultraxime.fr/bulk_download
-    build: bulk_download
-    environment:
-      <<: *default-environement 
+    env_file:
+      - basic_test.env
+      - proxys.env
+    restart: on-failure
     volumes:
       - type: bind
         source: results
@@ -183,54 +156,17 @@ services:
     cap_add:
       - NET_ADMIN
     depends_on:
+      proxy-client:
+        condition: service_healthy
       speedtest:
         condition: service_completed_successfully
-    profiles:
-      - run
-
-  results-compilation:
-    image: registry.ultraxime.fr/results-compilation
-    build: results-compilation
-    volumes:
-      - type: bind
-        source: results
-        target: /results
-    depends_on:
-      browsertime-custom:
-        condition: service_completed_successfully
-        restart: true
-      speedtest:
-        condition: service_completed_successfully
-        restart: true
-      bulk_download:
-        condition: service_completed_successfully
-        restart: true
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints:
-          - "node.labels.client==True"
-    networks: []
-    profiles:
-      - run
 
 networks:
-  proxy:
-    name: proxy
-    external: false
-    attachable: true
   client:
     name: 2_client
     external: false
     attachable: true 
   gateway:
-    name: 3_gateway
-    external: false
-    attachable: true
-  internet:
-    name: 1_internet
+    name: 1_gateway
     external: false
     attachable: true

@@ -30,39 +30,39 @@ RUN cargo build --bins --release
 
 FROM base AS client
 
-RUN apk add curl
+RUN apk add curl bash
 
-ENV port=8989
-ENV ip=127.0.0.1
-EXPOSE ${port}
+ENV CLIENT=localhost:8989
+ARG PORT=8989
+
+EXPOSE ${PORT}
+
+COPY --from=registry.ultraxime.fr/dns /dns-client.sh /
 
 ENV healtcheck=https://www.google.fr
 
-HEALTHCHECK --timeout=3s --start-period=5s CMD curl -p -x ${ip}:${port} ${healtcheck}
-
-ENV remote_ip=127.0.0.1
-ENV remote_port=4433
-
-ENV client_type=http
-
-ENV log_level=warn
+HEALTHCHECK --interval=30s --timeout=1m --start-period=45s \
+   CMD curl -f --retry 2 --max-time 15 --retry-delay 2 -p -x ${CLIENT} ${healtcheck} || bash -c 'kill -s 15 -1 && (sleep 10; kill -s 9 -1)'
 
 COPY --from=base /usr/src/masquerade/target/release/client /client
 
-CMD RUST_BACKTRACE=1 RUST_LOG=${log_level} /client ${remote_ip}:${remote_port} ${ip}:${port} ${client_type}
+COPY client.sh /client.sh
+
+CMD /client.sh
 
 
 FROM base AS server
 
-ENV port=4433
-ENV ip=127.0.0.1
-EXPOSE ${port}/udp
+ENV SERVER=localhost:4433
+ARG PORT=4433
+
+EXPOSE ${PORT}/udp
 
 ENV log_level=warn
 
 COPY --from=base /usr/src/masquerade/target/release/server /server
 
-CMD RUST_BACKTRACE=1 RUST_LOG=${log_level} /server ${ip}:${port}
+CMD RUST_BACKTRACE=1 RUST_LOG=${log_level} /server $SERVER
 
 
 FROM ${type}
