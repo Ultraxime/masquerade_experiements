@@ -28,9 +28,6 @@ class Report:
         except FileNotFoundError:
             pass
 
-    def __repr__(self):
-        return self.pageLoadTime.__repr__()
-
 
 class BrowserTime(Result):
     _proxy: List[Tuple[str, Report]]
@@ -46,9 +43,9 @@ class BrowserTime(Result):
                 attempts = [attempt for attempt in os.scandir(website.path)]
                 assert len(attempts) == 3
                 attempts.sort(key=lambda f: f.path)
-                self._native.append((website.name, Report(attempts[0].path)))
-                self._masquerade.append((website.name, Report(attempts[1].path)))
-                self._squid.append((website.name, Report(attempts[2].path)))
+                self._native[website.name] = Report(attempts[0].path)
+                self._masquerade[website.name] = Report(attempts[1].path)
+                self._squid[website.name] = Report(attempts[2].path)
 
     def plot(self):
         self.subplot("Page Load Time", "ms", lambda x : [int(test) for test in x[1].pageLoadTime])
