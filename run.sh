@@ -1,18 +1,23 @@
 #!/bin/bash
 
-for LOSS in 0 1 2 5; do
+run(){
+	echo "UPLOAD=$1" > network.env
+	echo "RTT=$2" >> network.env
+	echo "LOSS=$3" >> network.env
 
-	for RTT in 0 10 20 50 100 200 500; do
+	make run
+}
 
-		for BW in 40000 100 50 20 10 5 2 1; do
+for BW in 40000 100 50 20 10 5 2 1; do
+	run "$BW" 0 0
+done
 
-			echo "UPLOAD=$BW" > network.env
-			echo "RTT=$RTT" >> network.env
-			echo "LOSS=$LOSS" >> network.env
+for LOSS in 1 2 5; do
+	run 100 0 "$LOSS"
+done
 
-			make run
-		done
-	done
+for RTT in 10 20 50 100 200 500; do
+	run 100 "$RTT" 0
 done
 
 for TECHNOLOGY in 3g 4g; do

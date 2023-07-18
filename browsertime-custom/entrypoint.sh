@@ -30,7 +30,7 @@ if $MESURE; then
 
 	FULL_LIST=${FULL_LIST:-false}
 
-	COUNTRY=${COUNTRY:-fr}
+	COUNTRY=${COUNTRY:-it}
 
 	ID=$(stat -c "%u:%g" /browsertime/browsertime-results)
 
@@ -47,7 +47,7 @@ if $MESURE; then
 	if $FULL_LIST; then
 		cat similarweb-2021.csv | awk -F , -v COUNTRY=$COUNTRY '$1 == COUNTRY' | cut -d, -f3 > /websites.txt
 	else
-		cp $COUNTRY.txt /websites.txt
+		cp /$COUNTRY.txt /websites.txt
 	fi
 
 	for website in $(cat /websites.txt)

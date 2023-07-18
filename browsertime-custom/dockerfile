@@ -8,9 +8,9 @@ COPY entrypoint.sh /entrypoint.sh
 
 COPY similarweb-2021.csv .
 
-RUN wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/de.txt && \
-	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/fr.txt && \
-	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/it.txt && \
-	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/us.txt
+RUN wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/de.txt -O /de.txt&& \
+	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/fr.txt -O /fr.txt&& \
+	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/it.txt -O /it.txt&& \
+	wget https://raw.githubusercontent.com/marty90/icloud-private-relay-experiments/main/lists/us.txt -O /us.txt
 
 ENTRYPOINT /entrypoint.sh

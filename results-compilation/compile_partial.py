@@ -1,10 +1,14 @@
+"""
+Compile the result of one experiment
+"""
+
 import argparse
-import yaml
 import time
+import yaml
 
 from browsertime import BrowserTime
-from speedtest import SpeedTest
 from bulktest import BulkTest
+from speedtest import SpeedTest       # type: ignore [reportGeneralTypeIssues]
 
 parser = argparse.ArgumentParser(
                     prog='compile',
@@ -26,17 +30,20 @@ args = parser.parse_args()
 browsertime = BrowserTime("/results/browsertime-results")
 speedTest = SpeedTest("/results")
 bulkTest = BulkTest("/results")
-	
-if args.technology:
-	with open("/results/results/%s %s %s %s %s.yml" % (args.country, args.operator, args.technology, args.quality, time.asctime()), 'w', encoding='utf8') as file:
-		yaml.dump({"browsertime": browsertime,
-				   "speedtest": speedTest,
-				   "bulkTest": bulkTest},
-				  file)
-else:
-	with open("/results/results/%s %s %s %s %s.yml" % (args.upload, args.download, args.rtt, args.loss, time.asctime()), 'w', encoding='utf8') as file:
-		yaml.dump({"browsertime": browsertime,
-				   "speedtest": speedTest,
-				   "bulkTest": bulkTest},
-				  file)
 
+if args.technology:
+    with open(f"/results/results/{args.technology} {args.quality} "
+              + f"{args.country} {args.operator} {time.asctime()}.yml",
+              'w', encoding='utf8') as file:
+        yaml.dump({"browsertime": browsertime,
+                   "speedtest": speedTest,
+                   "bulkTest": bulkTest},
+                  file)
+else:
+    with open(f"/results/results/{args.upload} {args.download} "
+              + f"{args.rtt} {args.loss} {time.asctime()}.yml",
+              'w', encoding='utf8') as file:
+        yaml.dump({"browsertime": browsertime,
+                   "speedtest": speedTest,
+                   "bulkTest": bulkTest},
+                  file)
