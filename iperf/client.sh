@@ -17,4 +17,4 @@ function network_setup {
 network_setup
 
 /dns-client.sh $SERVER | (read SERVER_IP && echo $SERVER_IP && IP=$(echo $SERVER_IP | cut -d":" -f1) && \
-iperf3 -c $IP)
+iperf3 -c $IP -n 10)

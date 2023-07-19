@@ -22,11 +22,12 @@ WORKDIR /usr/src/
 
 # RUN ls /usr/local/cargo/bin && sleep 30
 
-COPY masquerade .
+COPY masquerade/ masquerade
 
 WORKDIR masquerade
 
 RUN cargo build --bins --release
+
 
 FROM base AS client
 

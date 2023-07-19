@@ -28,6 +28,7 @@ services:
       - gateway
     depends_on:
       - iperf-server
+      - dns
     cap_add:
       - NET_ADMIN
 
@@ -58,10 +59,10 @@ services:
 
 networks:
   client:
-    name: client
+    name: 2_client
     external: false
     attachable: true 
   gateway:
-    name: gateway
+    name: 1_gateway
     external: false
     attachable: true

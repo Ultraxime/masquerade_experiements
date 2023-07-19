@@ -17,7 +17,7 @@ else
 	DOWNLOAD=${DOWNLOAD:-$UPLOAD}
 	UPLOAD="$UPLOAD"000
 	DOWNLOAD="$DOWNLOAD"000
-	/errant -u $UPLOAD -d $DOWNLOAD -r $RTT -L $LOSS -i eth0
+	/errant -u $UPLOAD -d $DOWNLOAD -R $RTT -L $LOSS -i eth0
 fi
 
 ip addr

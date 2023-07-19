@@ -1,8 +1,13 @@
 ARG type
 
-FROM networkstatic/iperf3 AS client
+FROM alpine AS base
 
-RUN  apt-get update && apt-get install -y netcat-openbsd iproute2
+RUN apk add iperf3
+
+
+FROM base AS client
+
+RUN  apk add netcat-openbsd iproute2 bash
 
 ENV SERVER=iperf-server
 
@@ -13,7 +18,9 @@ COPY client.sh /client.sh
 ENTRYPOINT /client.sh
 
 
-FROM networkstatic/iperf3 AS server
+FROM base AS server
+
+EXPOSE 5201
 
 ENTRYPOINT iperf3 -s
 
