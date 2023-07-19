@@ -6,6 +6,6 @@ COPY --from=registry.ultraxime.fr/dns /dns-client.sh /
 
 COPY entrypoint.sh /entrypoint.sh
 
-COPY similarweb-2021.csv de.txt fr.txt it.txt us.txt .
+COPY similarweb-2021.csv de.txt fr.txt it.txt us.txt /
 
 ENTRYPOINT /entrypoint.sh

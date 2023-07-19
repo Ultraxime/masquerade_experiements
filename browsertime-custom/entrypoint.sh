@@ -32,7 +32,7 @@ if $MESURE; then
 
 	COUNTRY=${COUNTRY:-it}
 
-	ID=$(stat -c "%u:%g" /browsertime/browsertime-results)
+	ID=$(stat -c "%u:%g" .)
 
 	if [ -d /browsertime/browsertime-results ]; then
 		mkdir -p /browsertime/archives/dumps
@@ -44,12 +44,14 @@ if $MESURE; then
 		rsync --exclude "archives" --exclude "results" --exclude "*.yml" --delete --recursive --dirs --progress `mktemp -d`/ /browsertime/browsertime-results/
 	fi
 
-	if $FULL_LIST; then
-		cat similarweb-2021.csv | awk -F , -v COUNTRY=$COUNTRY '$1 == COUNTRY' | cut -d, -f3 > /websites.txt
-	else
-		cp /$COUNTRY.txt /websites.txt
+	if [ ! -f "/websites.txt" ]; then
+		if $FULL_LIST; then
+			cat /similarweb-2021.csv | awk -F , -v COUNTRY=$COUNTRY '$1 == COUNTRY' | cut -d, -f3 > /websites.txt
+		else
+			cp /$COUNTRY.txt /websites.txt
+		fi
 	fi
-
+	
 	for website in $(cat /websites.txt)
 	do
 	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint https://www.$website
