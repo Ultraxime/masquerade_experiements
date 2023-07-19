@@ -1,3 +1,12 @@
-[submodule "browsertime"]
-	path = browsertime
-	url = git@github.com:Ultraxime/browsertime.git
+[submodule "proxy/masquerade"]
+	path = proxy/masquerade
+	url = https://github.com/jromwu/masquerade.git
+	branch = master
+[submodule "speedtest/pyspeedtest"]
+	path = speedtest/pyspeedtest
+	url = https://github.com/ultraxime/pyspeedtest.git
+	branch = master
+[submodule "gateway/errant"]
+	path = gateway/errant
+	url = https://github.com/Ultraxime/errant.git
+	branch = master

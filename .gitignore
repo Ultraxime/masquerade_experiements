@@ -1,8 +1,7 @@
 results
-pyspeedtest
-errant
 network.env
 venv
 rename.sh
 compile.sh
 results.save
+iperf

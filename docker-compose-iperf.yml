@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  dns:
+    image: registry.ultraxime.fr/dns
+    restart: on-failure
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+    networks:
+      - gateway
+      - client
+
+  gateway:
+    image: registry.ultraxime.fr/gateway
+    env_file: network.env
+    restart: on-failure
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.proxy-client==True"
+    networks:
+      - client
+      - gateway
+    depends_on:
+      - iperf-server
+    cap_add:
+      - NET_ADMIN
+
+  iperf-server:
+    image: registry.ultraxime.fr/iperf3-server
+    build:
+      context: iperf
+      args:
+        type: server
+    networks:
+      - gateway
+
+  iperf-client:
+    image: registry.ultraxime.fr/iperf3-client
+    build:
+      context: iperf
+      args:
+        type: client
+    environment:
+      SERVER: iperf-server
+    depends_on:
+      - gateway
+      - dns
+    networks:
+      - client
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  client:
+    name: client
+    external: false
+    attachable: true 
+  gateway:
+    name: gateway
+    external: false
+    attachable: true
