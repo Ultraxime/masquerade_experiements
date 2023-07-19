@@ -3,6 +3,9 @@
 full:
 	./run.sh
 
+silent:
+	screen -d -m ./run.sh
+
 full_compile: build
 	docker compose -f docker-compose-compilation.yml run --remove-orphans full-compilation
 

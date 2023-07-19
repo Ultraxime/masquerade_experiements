@@ -52,12 +52,12 @@ if $MESURE; then
 
 	for website in $(cat /websites.txt)
 	do
-	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO https://www.$website
+	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint https://www.$website
 	    
-	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --proxy.https $PROXY_MASQUERADE https://www.$website
+	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint --proxy.https $PROXY_MASQUERADE https://www.$website
 	    
 		/dns-client.sh $PROXY_SQUID | (read PROXY && echo $PROXY && \
-		/start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --proxy.https $PROXY https://www.$website)
+		/start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint --proxy.https $PROXY https://www.$website)
 	done
 
 	exit 0
