@@ -29,10 +29,10 @@ if $MESURE; then
 	ID=$(stat -c "%u:%g" /results)
 
 	if [ -e /results/speedtest*.yml ]; then
-		mkdir -p /results/archives
-		chown $ID /results/archives
+		mkdir -p /results/archives/dumps
+		chown -R $ID /results/archives
 
-		rsync --archive --remove-source-files --progress /results/speedtest*.yml /results/archives
+		rsync --archive --remove-source-files --progress /results/speedtest*.yml /results/archives/dumps
 	fi
 
 	export FILE="/results/speedtest $(date).yml"

@@ -15,7 +15,7 @@ RUN pip install -Ur requirements.txt
 
 FROM python:3-alpine as base
 
-RUN apk add --update bash libstdc++
+RUN apk add --update bash libstdc++ rsync
 
 COPY --from=building_stage /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"

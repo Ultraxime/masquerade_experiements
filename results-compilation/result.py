@@ -27,7 +27,10 @@ class Result:
                     content = yaml.safe_load(file)
 
         if content is None:
-            raise ValueError("No file corresponding to " + name)
+            self._masquerade = []
+            self._squid = []
+            self._native = []
+            return
 
         self._masquerade = content["proxy-masquerade"]
         self._squid = content["proxy-squid"]

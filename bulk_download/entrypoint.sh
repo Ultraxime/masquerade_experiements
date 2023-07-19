@@ -27,12 +27,12 @@ if $MESURE; then
 	ID=$(stat -c "%u:%g" /results)
 
 	if [ -e /results/bulk_download*.yml ]; then
-		mkdir -p /results/archives
-		chown $ID /results/archives
+		mkdir -p /results/archives/dumps
+		chown -R $ID /results/archives
 
 		echo archiving existing file
 
-		rsync --archive --remove-source-files --progress /results/bulk_download*.yml /results/archives
+		rsync --archive --remove-source-files --progress /results/bulk_download*.yml /results/archives/dumps
 	fi
 
 	export FILE="/results/bulk_download $(date).yml"

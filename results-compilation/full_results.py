@@ -18,6 +18,9 @@ BANDWIDTH = True
 
 
 class Connectivity:
+    """
+    This class describes a connectivity.
+    """
     _technology: int
     _quality: int
 
@@ -55,7 +58,7 @@ class Connectivity:
     def __lt__(self, other):
         if not isinstance(other, Connectivity):
             return False
-        return (self._technology < other._technology or 
+        return (self._technology < other._technology or
                 (self._technology == other._technology and self._quality < other._quality))
 
     def __hash__(self):
@@ -158,6 +161,7 @@ class FullResults:
                                                  \"{data}\")""")
             self._connection.commit()
 
+    # pylint: disable=too-many-branches
     def plot(self):
         """
         Create the graph for all the relevant data
@@ -221,8 +225,8 @@ class FullResults:
                 self.subplot(res, label="Upload", unit="mbps",
                              condition=f"download: {download}mbps rtt: {rtt}ms, loss: {loss}%")
         res = {}
-        for technology, quality, data in self._cursor.execute(f"""SELECT technology, quality, data
-                                                                  FROM errant""").fetchall():
+        for technology, quality, data in self._cursor.execute("""SELECT technology, quality, data
+                                                                 FROM errant""").fetchall():
             data = yaml.load(data, Loader=yaml.Loader)
             res[Connectivity(technology, quality)] = data
         self.subplot(res, label="Network")

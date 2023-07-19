@@ -35,10 +35,10 @@ if $MESURE; then
 	ID=$(stat -c "%u:%g" /browsertime/browsertime-results)
 
 	if [ -d /browsertime/browsertime-results ]; then
-		mkdir -p /browsertime/archives
-		chown $ID /browsertime/archives
+		mkdir -p /browsertime/archives/dumps
+		chown -R $ID /browsertime/archives
 
-		rsync --archive --exclude "archives" --exclude "results" --exclude "*.yml" --remove-source-files --progress /browsertime/browsertime-results/* /browsertime/archives
+		rsync --archive --exclude "archives" --exclude "results" --exclude "*.yml" --remove-source-files --progress /browsertime/browsertime-results/* /browsertime/archives/dumps
 
 		# remove empty dir
 		rsync --exclude "archives" --exclude "results" --exclude "*.yml" --delete --recursive --dirs --progress `mktemp -d`/ /browsertime/browsertime-results/
