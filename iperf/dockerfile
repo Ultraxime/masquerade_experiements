@@ -1,0 +1,21 @@
+ARG type
+
+FROM networkstatic/iperf3 AS client
+
+RUN  apt-get update && apt-get install -y netcat-openbsd iproute2
+
+ENV SERVER=iperf-server
+
+COPY --from=registry.ultraxime.fr/dns /dns-client.sh /
+
+COPY client.sh /client.sh
+
+ENTRYPOINT /client.sh
+
+
+FROM networkstatic/iperf3 AS server
+
+ENTRYPOINT iperf3 -s
+
+
+FROM ${type}
