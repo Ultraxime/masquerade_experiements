@@ -286,6 +286,9 @@ class FullResults:
             res.append(convert(test))
             index.append(key)
         res = pd.DataFrame(res, index=index, columns=["native", "masquerade", "squid"]).sort_index()
-        fastplot.plot(data=res, path=f"/results/{name}", mode="boxplot_multi",
-                      xlabel=labels[0], ylabel=labels[1],
-                      legend=True, legend_ncol=3, figsize=(8, 4))
+        try:
+            fastplot.plot(data=res, path=f"/results/{name}", mode="boxplot_multi",
+                          xlabel=labels[0], ylabel=labels[1],
+                          legend=True, legend_ncol=3, figsize=(8, 4))
+        except ValueError:
+            print(f"Issue while creating {name}")

@@ -6,18 +6,17 @@ if [ -n "$TECHNOLOGY" ]; then
 	OPERATOR=${OPERATOR:-"universal"}
 	COUNTRY=${COUNTRY:-"universal"}
 	QUALITY=${QUALITY:-"universal"}
-	DIR=$(ls "/results/archives/$OPERATOR $COUNTRY $TECHNOLOGY $QUALITY *" -d | tail -n 1)
+	DIR=$(ls /results/archives/* -d | grep "$OPERATOR $COUNTRY $TECHNOLOGY $QUALITY" | tail -n 1)
 else
 	DOWNLOAD=${DOWNLOAD:-$UPLOAD}
 	UPLOAD="$UPLOAD"000
 	DOWNLOAD="$DOWNLOAD"000
-
-	DIR=$(ls "/results/archives/$UPLOAD $DOWNLOAD $RTT $LOSS *" -d | tail -n 1)
+	DIR=$(ls /results/archives/* -d | grep "$UPLOAD $DOWNLOAD $RTT $LOSS" | tail -n 1)
 fi
 
 
 if [ ! -d /results/browsertime-results ]; then
-	rsync --archive --progress "$DIR/*" /results
+	rsync --archive --progress "$DIR"/* /results
 fi
 
 

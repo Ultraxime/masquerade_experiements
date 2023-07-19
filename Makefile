@@ -1,4 +1,4 @@
-.PHONY: run build build_base
+.PHONY: run build build_base compile measure full_compile silent full
 
 full:
 	./run.sh
@@ -22,3 +22,4 @@ build: build_base
 
 build_base:
 	docker compose -f docker-compose-build.yml build dns
+
