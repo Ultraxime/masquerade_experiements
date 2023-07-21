@@ -93,15 +93,13 @@ class BrowserTime:
                "masquerade" : [],
                "squid": []}
         for website, native in self._native.items():
-            if (website in self._masquerade and website in self._squid
-                and len(native.get_page_load_time())
-                    == len(self._masquerade[website].get_page_load_time())
-                and len(native.get_page_load_time())
-                    == len(self._squid[website].get_page_load_time())):
-
-                res["native"].extend(native.get_page_load_time())
-                res["masquerade"].extend(self._masquerade[website].get_page_load_time())
-                res["squid"].extend(self._squid[website].get_page_load_time())
+            if website in self._masquerade and website in self._squid:
+                count = min(len(native.get_page_load_time()),
+                            len(self._masquerade[website].get_page_load_time()),
+                            len(self._squid[website].get_page_load_time()))
+                res["native"].extend(native.get_page_load_time()[:count])
+                res["masquerade"].extend(self._masquerade[website].get_page_load_time()[:count])
+                res["squid"].extend(self._squid[website].get_page_load_time()[:count])
         return res
 
     def get_speed_index(self) -> Dict[str, List[int]]:
@@ -115,12 +113,11 @@ class BrowserTime:
                "masquerade" : [],
                "squid": []}
         for website, native in self._native.items():
-            if (website in self._masquerade and website in self._squid
-                and len(native.get_speed_index())
-                    == len(self._masquerade[website].get_speed_index())
-                and len(native.get_speed_index()) == len(self._squid[website].get_speed_index())):
-
-                res["native"].extend(native.get_speed_index())
-                res["masquerade"].extend(self._masquerade[website].get_speed_index())
-                res["squid"].extend(self._squid[website].get_speed_index())
+            if website in self._masquerade and website in self._squid:
+                count = min(len(native.get_speed_index()),
+                            len(self._masquerade[website].get_speed_index()),
+                            len(self._squid[website].get_speed_index()))
+                res["native"].extend(native.get_speed_index()[:count])
+                res["masquerade"].extend(self._masquerade[website].get_speed_index()[:count])
+                res["squid"].extend(self._squid[website].get_speed_index()[:count])
         return res

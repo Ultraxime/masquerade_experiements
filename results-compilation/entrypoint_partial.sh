@@ -16,7 +16,7 @@ fi
 
 
 if [ ! -d /results/browsertime-results ]; then
-	rsync --archive --progress "$DIR"/* /results
+	rsync --archive "$DIR"/* /results
 fi
 
 
@@ -35,9 +35,9 @@ fi
 mkdir -p "$DIR"
 chown -R $ID /results/archives
 
-rsync --archive --exclude "archives" --exclude "results" --remove-source-files --progress /results/* "$DIR"
+rsync --archive --exclude "archives" --exclude "results" --remove-source-files /results/* "$DIR"
 
 # remove empty dir
-rsync --exclude "archives" --exclude "results" --delete --recursive --dirs --progress `mktemp -d`/ /results/
+rsync --exclude "archives" --exclude "results" --delete --recursive --dirs `mktemp -d`/ /results/
 
 chown -R $ID /results/results

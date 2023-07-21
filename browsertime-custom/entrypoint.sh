@@ -52,14 +52,26 @@ if $MESURE; then
 		fi
 	fi
 	
+	OPTIONS="-b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint --videoParams.convert false --skipHar "
+	TOTAL=$(cat /websites.txt | wc -l)
+
+	COUNT=1
+
 	for website in $(cat /websites.txt)
 	do
-	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint https://www.$website
+		echo -e "\n\nTesting $website ($COUNT/$TOTAL)\n"
+
+		echo "Native Test"
+	    /start.sh $OPTIONS https://www.$website
 	    
-	    /start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint --proxy.https $PROXY_MASQUERADE https://www.$website
+	    echo -e "\nMasquerade Test"
+	    /start.sh $OPTIONS --proxy.https $PROXY_MASQUERADE https://www.$website
 	    
-		/dns-client.sh $PROXY_SQUID | (read PROXY && echo $PROXY && \
-		/start.sh -b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint --proxy.https $PROXY https://www.$website)
+	    echo -e "\nSquid Test"
+		/dns-client.sh $PROXY_SQUID | (read PROXY && \
+		/start.sh $OPTIONS --proxy.https $PROXY https://www.$website)
+
+		COUNT=$(($COUNT + 1))
 	done
 
 	exit 0

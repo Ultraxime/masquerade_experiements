@@ -35,7 +35,7 @@ if $MESURE; then
 		rsync --archive --remove-source-files --progress /results/speedtest*.yml /results/archives/dumps
 	fi
 
-	export FILE="/results/speedtest $(date).yml"
+	export FILE="/results/speedtest $(date -Iseconds).yml"
 	touch "$FILE"
 
 	/speedtest.py -n $ITERATIONS -b $BROWSER --name native

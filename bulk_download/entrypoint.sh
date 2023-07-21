@@ -35,7 +35,7 @@ if $MESURE; then
 		rsync --archive --remove-source-files --progress /results/bulk_download*.yml /results/archives/dumps
 	fi
 
-	export FILE="/results/bulk_download $(date).yml"
+	export FILE="/results/bulk_download $(date -Iseconds).yml"
 	echo $FILE
 	
 	echo native: >> "$FILE"
