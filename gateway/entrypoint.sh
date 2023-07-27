@@ -12,7 +12,8 @@ if [ -n "$TECHNOLOGY" ]; then
 	OPERATOR=${OPERATOR:-"universal"}
 	COUNTRY=${COUNTRY:-"universal"}
 	QUALITY=${QUALITY:-"universal"}
-	/errant -o $OPERATOR -c $COUNTRY -t $TECHNOLOGY -q $QUALITY -i eth0
+	PERIODIC=${PERIODIC:-10}
+	/errant -o $OPERATOR -c $COUNTRY -t $TECHNOLOGY -q $QUALITY -i eth0 -p $PERIODIC
 else
 	DOWNLOAD=${DOWNLOAD:-$UPLOAD}
 	UPLOAD="$UPLOAD"000

@@ -52,7 +52,7 @@ if $MESURE; then
 		fi
 	fi
 	
-	OPTIONS="-b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint --videoParams.convert false --skipHar "
+	OPTIONS="-b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint --videoParams.convert false --skipHar --videoParams.threads 16"
 	TOTAL=$(cat /websites.txt | wc -l)
 
 	COUNT=1

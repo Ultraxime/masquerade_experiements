@@ -7,15 +7,15 @@ silent:
 	screen -d -m ./run.sh
 
 full_compile: build
-	docker compose -f docker-compose-compilation.yml run --remove-orphans full-compilation
+	docker compose -f docker-compose-compilation.yml run --remove-orphans --rm full-compilation
 
 run: kill measure compile
 
 compile: build
-	docker compose -f docker-compose-compilation.yml run --remove-orphans results-compilation
+	docker compose -f docker-compose-compilation.yml run --remove-orphans --rm results-compilation
 
 measure: build
-	docker compose -f docker-compose-measure.yml run --remove-orphans bulk_download
+	docker compose -f docker-compose-measure.yml run --remove-orphans --rm bulk_download
 
 build: build_base
 	docker compose -f docker-compose-build.yml build
@@ -32,3 +32,6 @@ kill:
 		sleep 10 ;\
 		make kill ;\
 	fi
+
+clean: kill
+	docker container prune -f && docker image prune -f && docker volume prune -f && docker network prune -f

@@ -4,3 +4,5 @@ venv
 rename.sh
 compile.sh
 results.save
+packet-loss*
+quiche-log

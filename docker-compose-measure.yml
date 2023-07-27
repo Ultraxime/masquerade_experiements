@@ -5,6 +5,10 @@ services:
     image: registry.ultraxime.fr/proxy-server
     env_file: masquerade.env
     restart: on-failure
+    # volumes:
+    #   - type: bind
+    #     source: quiche-log
+    #     target: /log
     deploy:
       mode: global
       restart_policy:
@@ -18,7 +22,11 @@ services:
   proxy-client:
     image: registry.ultraxime.fr/proxy-client
     env_file: masquerade.env
-    restart: on-failure
+    restart: always
+    # volumes:
+    #   - type: bind
+    #     source: quiche-log
+    #     target: /log
     deploy:
       mode: global
       restart_policy:
@@ -70,10 +78,6 @@ services:
     networks:
       - client
       - gateway
-    depends_on:
-      - squid-proxy
-      - proxy-server
-      - dns
     cap_add:
       - NET_ADMIN
 
@@ -101,6 +105,10 @@ services:
       proxy-client:
         condition: service_healthy
       gateway:
+        condition: service_started
+      squid-proxy:
+        condition: service_started
+      dns:
         condition: service_started
     cap_add:
       - NET_ADMIN
@@ -156,10 +164,9 @@ services:
     cap_add:
       - NET_ADMIN
     depends_on:
-      proxy-client:
-        condition: service_healthy
       speedtest:
         condition: service_completed_successfully
+
 
 networks:
   client:
