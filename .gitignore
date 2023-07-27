@@ -6,3 +6,5 @@ compile.sh
 results.save
 packet-loss*
 quiche-log
+results-de
+results-fr
