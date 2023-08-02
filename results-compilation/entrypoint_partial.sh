@@ -16,6 +16,9 @@ fi
 
 
 if [ ! -d /results/browsertime-results ]; then
+	if [ -z $DIR ]; then
+		exit
+	fi
 	rsync --archive "$DIR"/* /results
 fi
 
@@ -25,7 +28,7 @@ if [ -n "$TECHNOLOGY" ]; then
 	python /compile_partial.py -o $OPERATOR -c $COUNTRY -t $TECHNOLOGY -q $QUALITY
 
 	DIR="/results/archives/$OPERATOR $COUNTRY $TECHNOLOGY $QUALITY $(date -Iseconds)"
-		
+
 else
 	python /compile_partial.py -u $UPLOAD -d $DOWNLOAD -r $RTT -l $LOSS
 

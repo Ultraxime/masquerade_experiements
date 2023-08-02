@@ -35,3 +35,9 @@ kill:
 
 clean: kill
 	docker container prune -f && docker image prune -f && docker volume prune -f && docker network prune -f
+
+push: build
+	docker compose -f docker-compose-build.yml push
+
+pull:
+	docker compose -f docker-compose-build.yml pull

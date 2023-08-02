@@ -51,7 +51,7 @@ if $MESURE; then
 			cp /$COUNTRY.txt /websites.txt
 		fi
 	fi
-	
+
 	OPTIONS="-b $BROWSER -n $ITERATIONS --video $VIDEO --prettyPrint --videoParams.convert false --skipHar --videoParams.threads 16"
 	TOTAL=$(cat /websites.txt | wc -l)
 
@@ -63,10 +63,10 @@ if $MESURE; then
 
 		echo "Native Test"
 	    /start.sh $OPTIONS https://www.$website
-	    
+
 	    echo -e "\nMasquerade Test"
 	    /start.sh $OPTIONS --proxy.https $PROXY_MASQUERADE https://www.$website
-	    
+
 	    echo -e "\nSquid Test"
 		/dns-client.sh $PROXY_SQUID | (read PROXY && \
 		/start.sh $OPTIONS --proxy.https $PROXY https://www.$website)

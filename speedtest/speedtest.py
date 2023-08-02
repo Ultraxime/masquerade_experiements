@@ -5,9 +5,8 @@ Module to realise a speed test
 import argparse
 import os
 
-from pyspeedtest import run_speedtest # type: ignore [reportGeneralTypeIssues] # pylint: disable=no-name-in-module
-
 import yaml
+from pyspeedtest import run_speedtest # type: ignore [reportGeneralTypeIssues] # pylint: disable=no-name-in-module
 
 parser = argparse.ArgumentParser(
                     prog='SpeedTest',

@@ -1,17 +1,15 @@
 """
 Module for the result of the full experiment
 """
-
 import os
-import time
 import sqlite3
-
-from typing import Dict, Tuple
-
-import pandas as pd
-import yaml
+import time
+from typing import Dict
+from typing import Tuple
 
 import fastplot
+import pandas as pd
+import yaml
 
 # If up and download are correlated
 BANDWIDTH = True
@@ -120,7 +118,7 @@ class FullResults:
         rtt = int(data[2])
         loss = int(data[3])
         with open(test.path, 'r', encoding='utf-8') as file:
-            data = file.read()
+            data = file.read().encode("ascii", "replace")
             if self._cursor.execute(f"""SELECT * FROM basic
                                         WHERE upload={upload}
                                               AND download={download}
@@ -144,9 +142,9 @@ class FullResults:
         operator = data[2]
         country = data[3]
         with open(test.path, 'r', encoding='utf-8') as file:
-            data = file.read()
+            data = file.read().encode("ascii", "replace")
             if self._cursor.execute(f"""SELECT * FROM errant
-                                        WHERE technology=\"{technology}\" 
+                                        WHERE technology=\"{technology}\"
                                               AND quality=\"{quality}\"
                                               AND operator=\"{operator}\"
                                               AND country=\"{country}\"""").fetchall() != []:
@@ -234,7 +232,7 @@ class FullResults:
     def subplot(self, data: Dict, label: str, unit: str = "", condition: str = ""):
         """
         Create the graphs for one set of experiment
-        
+
         :param      data:       The data
         :type       data:       Dict
         :param      label:      The label

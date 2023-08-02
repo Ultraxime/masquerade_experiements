@@ -1,8 +1,8 @@
 """
 Module for the speed test result
 """
-
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
 from result import Result
 
@@ -11,8 +11,8 @@ class SpeedTest(Result):
     """
     This class describes a speed test's result.
     """
-    def __init__(self, folder: str = ".", name: str = "speedtest"):
-        super().__init__(folder, name)
+    def __init__(self, folder: str = ".", name: str = "speedtest", **kwargs):
+        super().__init__(folder, name, **kwargs)
 
     def plot(self):
         self.subplot("ping", "ms", lambda x : [int(x["ping_ms"])])

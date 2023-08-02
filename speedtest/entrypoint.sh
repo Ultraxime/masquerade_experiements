@@ -19,13 +19,13 @@ function network_setup {
 
 
 if $MESURE; then
-	
+
 	network_setup
 
 	BROWSER=${BROWSER:-firefox}
 
 	ITERATIONS=${ITERATIONS:-3}
-	
+
 	ID=$(stat -c "%u:%g" /results)
 
 	if [ -e /results/speedtest*.yml ]; then
@@ -39,9 +39,9 @@ if $MESURE; then
 	touch "$FILE"
 
 	/speedtest.py -n $ITERATIONS -b $BROWSER --name native
-	
+
 	/speedtest.py -n $ITERATIONS -x $PROXY_MASQUERADE -b $BROWSER --name proxy-masquerade
-	
+
 	/dns-client.sh $PROXY_SQUID | (read PROXY && \
 	/speedtest.py -n $ITERATIONS -x $PROXY -b $BROWSER --name proxy-squid)
 

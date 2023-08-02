@@ -44,7 +44,7 @@ services:
 
   results-compilation:
     image: registry.ultraxime.fr/results-compilation
-    build: 
+    build:
       context: results-compilation
       dockerfile: dockerfile
       args:
@@ -52,7 +52,7 @@ services:
 
   full-compilation:
     image: registry.ultraxime.fr/full-compilation
-    build: 
+    build:
       context: results-compilation
       dockerfile: dockerfile
       args:

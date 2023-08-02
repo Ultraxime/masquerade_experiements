@@ -1,13 +1,13 @@
 """
 Compile the result of one experiment
 """
-
 import argparse
 import time
-import yaml
 
+import yaml
 from browsertime import BrowserTime
 from bulktest import BulkTest
+
 from speedtest import SpeedTest       # type: ignore [reportGeneralTypeIssues]
 
 parser = argparse.ArgumentParser(

@@ -19,11 +19,11 @@ function network_setup {
 
 
 if $MESURE; then
-	
+
 	network_setup
 
 	ITERATIONS=${ITERATIONS:-3}
-	
+
 	ID=$(stat -c "%u:%g" /results)
 
 	if [ -e /results/bulk_download*.yml ]; then
@@ -37,11 +37,11 @@ if $MESURE; then
 
 	export FILE="/results/bulk_download $(date -Iseconds).yml"
 	echo $FILE
-	
+
 	echo native: >> "$FILE"
 
 	export OPTIONS="-s -w %{speed_download} -o /dev/null -m 60 "
-	
+
 	for i in $(seq 1 $ITERATIONS)
 	do
 		echo "Test n°$i (native)"
@@ -49,9 +49,9 @@ if $MESURE; then
 		curl $OPTIONS http://speed.hetzner.de/1GB.bin >> "$FILE"
 		echo "" >> "$FILE"
 	done
-	
+
 	echo proxy-masquerade: >> "$FILE"
-	
+
 	for i in $(seq 1 $ITERATIONS)
 	do
 		echo "Test n°$i (proxy-masquerade)"
@@ -59,9 +59,9 @@ if $MESURE; then
 		curl $OPTIONS -p -x $PROXY_MASQUERADE http://speed.hetzner.de/1GB.bin >> "$FILE"
 		echo "" >> "$FILE"
 	done
-	
+
 	echo proxy-squid: >> "$FILE"
-	
+
 	for i in $(seq 1 $ITERATIONS)
 	do
 		echo "Test n°$i (proxy-squid)"
@@ -70,6 +70,6 @@ if $MESURE; then
 		curl $OPTIONS -p -x $PROXY http://speed.hetzner.de/1GB.bin >> "$FILE")
 		echo "" >> "$FILE"
 	done
-	
+
 	chown -R $ID "$FILE"
 fi

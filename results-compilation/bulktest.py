@@ -1,8 +1,8 @@
 """
 Module for the bulk test result
 """
-
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
 from result import Result
 
@@ -11,8 +11,8 @@ class BulkTest(Result):
     """
     This class describes a bulk test's result.
     """
-    def __init__(self, folder: str = ".", name: str = "bulk_download"):
-        super().__init__(folder, name)
+    def __init__(self, folder: str = ".", name: str = "bulk_download", **kwargs):
+        super().__init__(folder, name, **kwargs)
 
     def plot(self):
         self.subplot("bulk download", unit="mbps",

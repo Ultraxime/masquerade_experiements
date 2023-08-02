@@ -10,3 +10,6 @@
 	path = gateway/errant
 	url = https://github.com/Ultraxime/errant.git
 	branch = master
+[submodule "chromium-tools/masque-experiments"]
+	path = chromium-tools/masque-experiments
+	url = git@github.com:marty90/masque-experiments.git

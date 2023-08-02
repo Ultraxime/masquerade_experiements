@@ -1,14 +1,15 @@
 """
 Module for the browsertime results
 """
-
 import json
 import os
 import time
-
-from typing import List, Dict
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import yaml
+from result import Result
 
 
 class Report:
@@ -18,7 +19,14 @@ class Report:
     _page_load_time: List[int]
     _speed_index: List[int]
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str = "",
+                 _page_load_time: Optional[List] = None,
+                 _speed_index: Optional[List] = None):
+        if _page_load_time is not None and _speed_index is not None:
+            self._page_load_time = _page_load_time
+            self._speed_index = _speed_index
+            return
+
         self._page_load_time = []
         self._speed_index = []
 
@@ -52,7 +60,7 @@ class Report:
         return self._speed_index
 
 
-class BrowserTime:
+class BrowserTime (Result):
     """
     This class describes the result of one run of the browsertime experiment.
     """
@@ -60,7 +68,15 @@ class BrowserTime:
     _masquerade: Dict[str, Report]
     _squid: Dict[str, Report]
 
-    def __init__(self, folder: str = "."):
+    def __init__(self, folder: str = ".",
+                 _native: Optional[Dict] = None,
+                 _masquerade: Optional[Dict] = None,
+                 _squid: Optional[Dict] = None):
+        if _native is not None and _masquerade is not None and _squid is not None:
+            # pylint: disable=C0301
+            super().__init__(_native=_native, _masquerade=_masquerade, _squid=_squid) # pyright: ignore[reportGeneralTypeIssues]
+            return
+
         self._native = {}
         self._masquerade = {}
         self._squid = {}
@@ -68,11 +84,13 @@ class BrowserTime:
         for website in os.scandir(folder):
             if website.name not in ("archives", "results") and website.is_dir():
                 attempts = list(os.scandir(website.path))
-                assert len(attempts) == 3
-                attempts.sort(key=lambda f: f.path)
-                self._native[website.name] = Report(attempts[0].path)
-                self._masquerade[website.name] = Report(attempts[1].path)
-                self._squid[website.name] = Report(attempts[2].path)
+                if len(attempts) == 3:
+                    attempts.sort(key=lambda f: f.path)
+                    self._native[website.name] = Report(attempts[0].path)
+                    self._masquerade[website.name] = Report(attempts[1].path)
+                    self._squid[website.name] = Report(attempts[2].path)
+                else:
+                    print(f"Issue with the run for {website.name}")
 
     def save(self):
         """
@@ -85,7 +103,7 @@ class BrowserTime:
     def get_page_load_time(self) -> Dict[str, List[int]]:
         """
         Gets the page load time.
-        
+
         :returns:   The page load time.
         :rtype:     str * (int List) dict
         """
@@ -105,7 +123,7 @@ class BrowserTime:
     def get_speed_index(self) -> Dict[str, List[int]]:
         """
         Gets the speed index.
-        
+
         :returns:   The speed index.
         :rtype:     str * (int List) dict
         """

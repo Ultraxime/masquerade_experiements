@@ -1,14 +1,14 @@
 """
 Base class for the results
 """
-
 import os
 import time
+from typing import Iterable
+from typing import List
+from typing import Optional
 
-from typing import List, Iterable
-
-import yaml
 import matplotlib.pyplot as plt
+import yaml
 
 
 class Result:
@@ -19,7 +19,16 @@ class Result:
     _masquerade: List
     _squid: List
 
-    def __init__(self, folder: str = ".", name: str = ""):
+    def __init__(self, folder: str = ".", name: str = "",
+                 _native: Optional[List] = None,
+                 _masquerade: Optional[List] = None,
+                 _squid: Optional[List] = None):
+        if _native is not None and _masquerade is not None and _squid is not None:
+            self._native = _native
+            self._masquerade = _masquerade
+            self._squid = _squid
+            return
+
         content = None
         for file in os.scandir(folder):
             if not file.is_dir() and name in file.name:
@@ -32,19 +41,28 @@ class Result:
             self._native = []
             return
 
-        self._masquerade = content["proxy-masquerade"]
-        self._squid = content["proxy-squid"]
-        self._native = content["native"]
+        try:
+            self._masquerade = content["proxy-masquerade"]
+        except KeyError:
+            self._masquerade = []
+        try:
+            self._squid = content["proxy-squid"]
+        except KeyError:
+            self._squid = []
+        try:
+            self._native = content["native"]
+        except KeyError:
+            self._native = []
 
     def develop(self, field: Iterable, convert) -> List:
         """
         Convert a set of test's results in one sorted list
-        
+
         :param      field:    The field
         :type       field:    Iterable
         :param      convert:  The convert
         :type       convert:  Any -> List
-        
+
         :returns:   the sorted list
         :rtype:     List
         """
@@ -119,4 +137,23 @@ class Result:
         Create all the plot for the result
         """
         self.subplot(type(self).__name__)
-    
+
+    def get_field(self, field: str) -> List:
+        """
+        Gets the field.
+
+        :param      field:  The field
+        :type       field:  str
+
+        :returns:   The field.
+        :rtype:     List
+        """
+        match field:
+            case "native":
+                return self._native
+            case "masquerade":
+                return self._masquerade
+            case "squid":
+                return self._squid
+            case _:
+                raise ValueError
