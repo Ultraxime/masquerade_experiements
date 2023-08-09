@@ -1,9 +1,0 @@
-FROM alpine:latest
-
-RUN apk add bash curl rsync netcat-openbsd
-
-COPY --from=registry.ultraxime.fr/dns /dns-client.sh /
-
-COPY entrypoint.sh /
-
-ENTRYPOINT /entrypoint.sh

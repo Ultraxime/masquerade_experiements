@@ -13,3 +13,6 @@
 [submodule "chromium-tools/masque-experiments"]
 	path = chromium-tools/masque-experiments
 	url = git@github.com:marty90/masque-experiments.git
+[submodule "masque-tools/pyspeedtest"]
+	path = masque-tools/pyspeedtest
+	url = https://github.com/ultraxime/pyspeedtest.git

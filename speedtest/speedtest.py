@@ -4,9 +4,43 @@ Module to realise a speed test
 """
 import argparse
 import os
+from typing import Optional
 
 import yaml
 from pyspeedtest import run_speedtest # type: ignore [reportGeneralTypeIssues] # pylint: disable=no-name-in-module
+
+def speedtest(data: list, browser: str, proxy: Optional[str] = None, count: int = 3):
+    """
+    run a Speedtest, with three try to prevent failures
+
+    :param      data:     The data
+    :type       data:     list
+    :param      browser:  The browser
+    :type       browser:  str
+    :param      proxy:    The proxy
+    :type       proxy:    the proxy to use
+    :param      count:    The count
+    :type       count:    int
+
+    :returns:   Nothing
+    :rtype:     NoneType
+    """
+    try:
+        if proxy:
+            print(proxy)
+            data.append(run_speedtest(
+                browser=browser,
+                pcap_path="trace.pcap",
+                options=["--headless", f"--proxy-server=\"{proxy}\""]))
+        else:
+            data.append(run_speedtest(
+                browser=browser,
+                pcap_path="trace.pcap",
+                options=["--headless"]))
+    except:                                                             # pylint: disable=bare-except
+        if count == 0:
+            return
+        speedtest(data, browser, proxy, count-1)
 
 parser = argparse.ArgumentParser(
                     prog='SpeedTest',
@@ -33,17 +67,7 @@ for file in os.scandir("/results"):
 
             for i in range(args.iterations):
                 print("Test n°" + str(i) + " (" + args.name + ")")
-                if args.proxy:
-                    print(args.proxy)
-                    content[args.name].append(run_speedtest(
-                        browser=args.browser,
-                        pcap_path="trace.pcap",
-                        options=["--headless", f"--proxy-server=\"{args.proxy}\""]))
-                else:
-                    content[args.name].append(run_speedtest(
-                        browser=args.browser,
-                        pcap_path="trace.pcap",
-                        options=["--headless"]))
+                speedtest(content[args.name], args.browser, args.proxy)
 
         with open(file.path, "w", encoding="utf-8") as file:
             yaml.dump(content, file)

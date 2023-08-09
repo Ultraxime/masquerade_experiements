@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   results-compilation:
-    image: registry.ultraxime.fr/results-compilation
+    image: maximebruno/results-compilation
     env_file: network.env
     volumes:
       - type: bind
@@ -20,7 +20,7 @@ services:
     networks: []
 
   full-compilation:
-    image: registry.ultraxime.fr/full-compilation
+    image: maximebruno/full-compilation
     volumes:
       - type: bind
         source: results/results
@@ -35,3 +35,5 @@ services:
         constraints:
           - "node.labels.client==True"
     networks: []
+
+networks: {}

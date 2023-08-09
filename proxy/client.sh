@@ -6,10 +6,10 @@ function network_setup {
 
     ip route
 
-    GATEWAY_IP=$(getent hosts $GATEWAY | cut -d" " -f1 | head -n 1)
-    echo $GATEWAY_IP
+    GATEWAY_IP=$(getent hosts "$GATEWAY" | cut -d" " -f1 | head -n 1)
+    echo "$GATEWAY_IP"
     ip route delete default
-    ip route add default via $GATEWAY_IP dev eth0
+    ip route add default via "$GATEWAY_IP" dev eth0
 
     ip route
 }
@@ -27,5 +27,5 @@ mkdir -p "$DIR"
 chmod 777 "$DIR"
 export SSLKEYLOGFILE="$DIR/sslkeylog.log"
 tcpdump port 4433 -w "$DIR/dump.pcap" &
-/dns-client.sh $SERVER | (read SERVER_IP && echo $SERVER_IP && \
-RUST_BACKTRACE=1 RUST_LOG=$LOG_LEVEL /client $SERVER_IP $CLIENT $CLIENT_TYPE)
+/dns-client.sh "$SERVER "| (read -r SERVER_IP && echo "$SERVER_IP" && \
+RUST_BACKTRACE=1 RUST_LOG=$LOG_LEVEL /client "$SERVER_IP" "$CLIENT" "$CLIENT_TYPE")

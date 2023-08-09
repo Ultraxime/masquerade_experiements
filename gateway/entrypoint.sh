@@ -13,12 +13,12 @@ if [ -n "$TECHNOLOGY" ]; then
 	COUNTRY=${COUNTRY:-"universal"}
 	QUALITY=${QUALITY:-"universal"}
 	PERIODIC=${PERIODIC:-10}
-	/errant -o $OPERATOR -c $COUNTRY -t $TECHNOLOGY -q $QUALITY -i eth0 -p $PERIODIC
+	/errant -o "$OPERATOR" -c "$COUNTRY" -t "$TECHNOLOGY" -q "$QUALITY" -i eth0 -p "$PERIODIC"
 else
 	DOWNLOAD=${DOWNLOAD:-$UPLOAD}
 	UPLOAD="$UPLOAD"000
 	DOWNLOAD="$DOWNLOAD"000
-	/errant -u $UPLOAD -d $DOWNLOAD -R $RTT -L $LOSS -i eth0
+	/errant -u "$UPLOAD" -d "$DOWNLOAD" -R "$RTT" -L "$LOSS" -i eth0
 fi
 
 ip addr

@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   proxy-server:
-    image: registry.ultraxime.fr/proxy-server
+    image: maximebruno/proxy-server
     env_file: masquerade.env
     restart: on-failure
     # volumes:
@@ -20,7 +20,7 @@ services:
       - gateway
 
   proxy-client:
-    image: registry.ultraxime.fr/proxy-client
+    image: maximebruno/proxy-client
     env_file: masquerade.env
     restart: always
     # volumes:
@@ -50,11 +50,15 @@ services:
       mode: global
       restart_policy:
         condition: on-failure
+    volumes:
+      - type: bind
+        source: squid.conf
+        target: /etc/squid/squid.conf
     networks:
       - gateway
 
   dns:
-    image: registry.ultraxime.fr/dns
+    image: maximebruno/dns
     restart: on-failure
     deploy:
       mode: global
@@ -65,7 +69,7 @@ services:
       - client
 
   gateway:
-    image: registry.ultraxime.fr/gateway
+    image: maximebruno/gateway
     env_file: network.env
     restart: on-failure
     deploy:
@@ -82,7 +86,7 @@ services:
       - NET_ADMIN
 
   browsertime-custom:
-    image: registry.ultraxime.fr/browsertime-custom
+    image: maximebruno/browsertime-custom
     env_file:
       - browsertime.env
       - proxys.env
@@ -114,7 +118,7 @@ services:
       - NET_ADMIN
 
   speedtest:
-    image: registry.ultraxime.fr/speedtest
+    image: maximebruno/speedtest
     env_file:
       - basic_test.env
       - proxys.env
@@ -142,7 +146,7 @@ services:
         condition: service_healthy
 
   bulk_download:
-    image: registry.ultraxime.fr/bulk_download
+    image: maximebruno/bulk_download
     env_file:
       - basic_test.env
       - proxys.env

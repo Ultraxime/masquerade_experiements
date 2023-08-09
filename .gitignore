@@ -8,6 +8,3 @@ packet-loss*
 quiche-log
 results-de
 results-fr
-
-# temp
-chromium-tools

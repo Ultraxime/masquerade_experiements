@@ -6,4 +6,4 @@ mkdir -p /results/Loss /results/RTT /results/Download /results/Upload /results/N
 
 python /compile.py
 
-chown -R $ID /results
+chown -R "$ID" /results

@@ -9,10 +9,10 @@ function network_setup {
 
 	# ip route
 
-	GATEWAY_IP=$(getent hosts $GATEWAY | cut -d" " -f1 | head -n 1)
+	GATEWAY_IP=$(getent hosts "$GATEWAY" | cut -d" " -f1 | head -n 1)
 	# echo $GATEWAY_IP
 	ip route delete default
-	ip route add default via $GATEWAY_IP dev eth0
+	ip route add default via "$GATEWAY_IP" dev eth0
 
 	# ip route
 }
@@ -28,22 +28,24 @@ if $MESURE; then
 
 	ID=$(stat -c "%u:%g" /results)
 
-	if [ -e /results/speedtest*.yml ]; then
+	exist=$(ls /results/speedtest*.yml)
+
+	if [ -n "$exist" ]; then
 		mkdir -p /results/archives/dumps
-		chown -R $ID /results/archives
+		chown -R "$ID" /results/archives
 
 		rsync --archive --remove-source-files --progress /results/speedtest*.yml /results/archives/dumps
 	fi
 
-	export FILE="/results/speedtest $(date -Iseconds).yml"
+	FILE="/results/speedtest $(date -Iseconds).yml"
 	touch "$FILE"
 
-	/speedtest.py -n $ITERATIONS -b $BROWSER --name native
+	/speedtest.py -n "$ITERATIONS" -b "$BROWSER" --name native
 
-	/speedtest.py -n $ITERATIONS -x $PROXY_MASQUERADE -b $BROWSER --name proxy-masquerade
+	/speedtest.py -n "$ITERATIONS" -x "$PROXY_MASQUERADE" -b "$BROWSER" --name proxy-masquerade
 
-	/dns-client.sh $PROXY_SQUID | (read PROXY && \
-	/speedtest.py -n $ITERATIONS -x $PROXY -b $BROWSER --name proxy-squid)
+	/dns-client.sh "$PROXY_SQUID" | (read -r PROXY && \
+	/speedtest.py -n "$ITERATIONS" -x "$PROXY" -b "$BROWSER" --name proxy-squid)
 
-	chown -R $ID "$FILE"
+	chown -R "$ID" "$FILE"
 fi
