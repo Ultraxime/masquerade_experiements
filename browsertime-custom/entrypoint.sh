@@ -38,7 +38,7 @@ if $MESURE; then
 		mkdir -p /browsertime/archives/dumps
 		chown -R "$ID" /browsertime/archives
 
-		rsync --archive --exclude "archives" --exclude "results" --exclude "*.yml" --remove-source-files --progress /browsertime/browsertime-results/* /browsertime/archives/dumps
+		rsync --archive --exclude "archives" --exclude "results" --exclude "*.yml" --include "*/" --include "**/browsertime.json" --exclude "*" --prune-empty-dirs --remove-source-files --progress /browsertime/browsertime-results/* /browsertime/archives/dumps
 
 		# remove empty dir
 		rsync --exclude "archives" --exclude "results" --exclude "*.yml" --delete --recursive --dirs --progress "$(mktemp -d)"/ /browsertime/browsertime-results/

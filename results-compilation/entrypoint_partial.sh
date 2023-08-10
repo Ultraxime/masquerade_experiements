@@ -38,9 +38,9 @@ fi
 mkdir -p "$DIR"
 chown -R "$ID" /results/archives
 
-rsync --archive --exclude "archives" --exclude "results" --remove-source-files /results/* "$DIR"
+rsync --archive --exclude "archives" --exclude "results" --include "*/" --include "**/browsertime.json" --include '*.yml' --exclude "*" --prune-empty-dirs --remove-source-files /results/* "$DIR"
 
 # remove empty dir
-rsync --exclude "archives" --exclude "results" --delete --recursive --dirs "$(mktemp -d)"/ /results/
+rsync --exclude "archives" --exclude "results" --delete --recursive "$(mktemp -d)"/ /results/
 
 chown -R "$ID" /results/results
