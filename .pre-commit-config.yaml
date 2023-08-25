@@ -38,6 +38,7 @@ repos:
         entry: pylint
         language: system
         types: [python]
+        args: ['--max-parents=12']
       - id: pyright
         name: pyright
         entry: pyright
